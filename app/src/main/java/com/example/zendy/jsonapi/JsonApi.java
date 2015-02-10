@@ -53,10 +53,13 @@ public class JsonApi {
                                             (JSONObject) linksJsonObject.get(linksKey), linksKey);
                         }else if(resourceFromLink instanceof JSONArray){
                             linksResourceType=getResourceTypeFromRootLinks(linksKey);
+                        }else if(resourceFromLink instanceof String){
+                            linksResourceType=linksKey;
                         }
-                            JSONArray arrayOfResourceId = findArrayResourceId(
+                            Object resourceId = findArrayResourceId(
                                 linksJsonObject.get(linksKey));
-                        if (arrayOfResourceId != null && fieldForKey.getType().isArray()) {
+                        if (resourceId instanceof JSONArray && fieldForKey.getType().isArray()) {
+                            JSONArray arrayOfResourceId=(JSONArray)resourceId;
                             Object arrayOfResource = Array
                                     .newInstance(fieldForKey.getType().getComponentType(),
                                             arrayOfResourceId.length());
@@ -67,9 +70,9 @@ public class JsonApi {
                                         fieldForKey.getType().getComponentType());
                             }
                             setFieldValue(targetObject, fieldForKey, arrayOfResource);
-                        } else {
+                        } else if(resourceId instanceof String){
                             JSONObject jsonResource = linkedMap.get(linksResourceType)
-                                    .get(linksJsonObject.getString(linksResourceType));
+                                    .get(resourceId);
                             Object resource = parse(jsonResource, fieldForKey.getType());
                             setFieldValue(targetObject, fieldForKey, resource);
                         }
@@ -178,13 +181,19 @@ public class JsonApi {
         }
     }
 
-    private JSONArray findArrayResourceId(Object object) throws JSONException {
+    private Object findArrayResourceId(Object object)  {
         if (object instanceof JSONArray) {
-            return (JSONArray) object;
+            return object;
         } else if (object instanceof JSONObject) {
-            if (((JSONObject) object).get(JsonApiKey.IDS) instanceof JSONArray) {
-                return (JSONArray) ((JSONObject) object).get(JsonApiKey.IDS);
+            try {
+                if (((JSONObject) object).get(JsonApiKey.IDS) instanceof JSONArray) {
+                    return (JSONArray) ((JSONObject) object).get(JsonApiKey.IDS);
+                }
+            } catch (JSONException e) {
+                return null;
             }
+        }else if(object instanceof String){
+            return object;
         }
         return null;
     }

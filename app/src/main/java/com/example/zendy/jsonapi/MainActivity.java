@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
 import model.DataResponse;
+import model.WishlistDataResponse;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -21,7 +22,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         try {
-            Object object=new JsonApi().fromJson(readJson(), DataResponse.class);
+            Object object=new JsonApi().fromJson(readJson(), WishlistDataResponse.class);
             System.out.println("");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -62,7 +63,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private String readJson() throws IOException {
-        InputStream stream = getAssets().open("json.txt");
+        InputStream stream = getAssets().open("json2.txt");
         int size = stream.available();
         byte[] buffer = new byte[size];
         stream.read(buffer);

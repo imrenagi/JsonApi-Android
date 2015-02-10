@@ -1,52 +1,160 @@
-{  
-   "posts":[  
-      {  
-         "id":1,
-         "name":"Apost!",
-         "links":{  
-            "author":9,
-            "comments":[  
-               2,
-               3
-            ]
-         }
-      },
-      {  
-         "id":2,
-         "name":"Anotherpost!",
-         "links":{  
-            "author":10,
-            "comments":[  
-               3,
-               4
-            ]
-         }
-      }
-   ],
-   "linked":{  
-      "people":[  
-         {  
-            "id":9,
-            "name":"JoshHoltz"
-         },
-         {  
-            "id":10,
-            "name":"BandittheCat"
-         }
-      ],
-      "comments":[  
-         {  
-            "id":2,
-            "text":"Omgthispostisawesome"
-         },
-         {  
-            "id":3,
-            "text":"Omgthispostisawesomer"
-         },
-         {  
-            "id":4,
-            "text":"Meeeehhhhh"
-         }
-      ]
-   }
+{
+    "data": {
+        "links": {
+            "movie": {
+                "type": "content",
+                "ids": [
+                    "7a3f3033-d63b-39a0-9914-97c05e282b90"
+                ]
+            },
+            "tv": {
+                "type": "content"
+            }
+        }
+    },
+    "meta": {},
+    "links": {
+        "data.info.thumb": {
+            "type": "media",
+            "href": ""
+        },
+        "data.info.trailer_video": {
+            "type": "media",
+            "href": ""
+        },
+        "data.info.policy": {
+            "type": "policy",
+            "href": "http://api.se3.com/policies/{data.info.policy}"
+        },
+        "data.info.actors": {
+            "type": "people",
+            "href": "http://api.se3.com/people/actors/{data.info.actors}"
+        },
+        "data.info.writers": {
+            "type": "people",
+            "href": "http://api.se3.com/people/writers/{data.info.writers}"
+        },
+        "data.info.video": {
+            "type": "media",
+            "href": ""
+        },
+        "data.info.poster": {
+            "type": "media",
+            "href": ""
+        },
+        "data.info.trailer_thumb": {
+            "type": "media",
+            "href": ""
+        },
+        "data.info.genres": {
+            "type": "genre",
+            "href": "http://api.se3.com/genres/{data.info.genres}"
+        },
+        "data.info.pricing": {
+            "type": "pricing",
+            "href": "http://api.se3.com/pricing/{data.info.pricing}"
+        },
+        "data.info.directors": {
+            "type": "people",
+            "href": "http://api.se3.com/people/directors/{data.info.directors}"
+        }
+    },
+    "linked": {
+        "genre": [
+            {
+                "id": "4f66b2bd-e693-3e66-a04e-a41406a6e1d5",
+                "name": "Science Fiction"
+            },
+            {
+                "id": "dc1d2a4d-5918-37f0-a0dd-38b4ebcf5a72",
+                "name": "Adventure"
+            },
+            {
+                "id": "1526e0ac-850c-341e-a163-1d9ad5664475",
+                "name": "Movie"
+            },
+            {
+                "id": "41ce88c9-1e34-3fce-9c4d-961ef9244c32",
+                "name": "Thriller"
+            },
+            {
+                "id": "004bf6c9-a400-3314-8292-e97330236c53",
+                "name": "Action"
+            }
+        ],
+        "people": [
+            {
+                "id": "da5f9514-1b1e-3e75-9a33-27d9faf85029",
+                "name": "Jennifer Lawrence"
+            },
+            {
+                "id": "5cc3d7ea-d207-3822-a525-80185761a152",
+                "name": "Josh Hutcherson"
+            },
+            {
+                "id": "f5b620bd-67da-35dc-8cb9-e904158bb79f",
+                "name": "Sam Claflin"
+            },
+            {
+                "id": "29780318-fa3f-3caf-90cd-28d3f3cd21a5",
+                "name": "Elizabeth Banks"
+            }
+        ],
+        "content": [
+            {
+                "id": "7a3f3033-d63b-39a0-9914-97c05e282b90",
+                "contentType": "movie",
+                "info": {
+                    "title": "Hunger Games: Catching Fire",
+                    "releaseYear": "2013",
+                    "rating": "0.0",
+                    "limits": {
+                        "urn:mpaa": "pg-13"
+                    },
+                    "length": "8760",
+                    "description": "Katniss Everdeen has returned home safe after winning the 74th Annual Hunger Games along with fellow tribute Peeta Mellark. Winning means that they must turn around and leave their family and close friends, embarking on a \"Victor's Tour\" of the districts. Along the way Katniss senses that a rebellion is simmering, but the Capitol is still very much in control as President Snow prepares the 75th Annual Hunger Games (The Quarter Quell) - a competition that could change Panem forever.",
+                    "links": {
+                        "genres": [
+                            "4f66b2bd-e693-3e66-a04e-a41406a6e1d5",
+                            "dc1d2a4d-5918-37f0-a0dd-38b4ebcf5a72",
+                            "1526e0ac-850c-341e-a163-1d9ad5664475",
+                            "41ce88c9-1e34-3fce-9c4d-961ef9244c32",
+                            "004bf6c9-a400-3314-8292-e97330236c53"
+                        ],
+                        "actors": [
+                            "da5f9514-1b1e-3e75-9a33-27d9faf85029",
+                            "5cc3d7ea-d207-3822-a525-80185761a152",
+                            "f5b620bd-67da-35dc-8cb9-e904158bb79f",
+                            "29780318-fa3f-3caf-90cd-28d3f3cd21a5"
+                        ],
+                        "assets": {
+                            "poster": "http://pmd307386tn.download.theplatform.com.edgesuite.net/Studio_E3_-_Dev/263/275/hungergamescatchingfire_poster.jpg",
+                            "thumbnail": "http://pmd307386tn.download.theplatform.com.edgesuite.net/Studio_E3_-_Dev/263/275/hungergamescatchingfire_thumbnail.jpg",
+                            "trailer": {
+                                "video": "http://link.theplatform.com/s/jAZqTC/U2Auuod3Nl9L?feed=Movie&format=redirect"
+                            }
+                        },
+                        "pricing": "b82c27ed-dfea-44f7-8a1f-f5e9398cf495",
+                        "policy": "7a3f3033-d63b-39a0-9914-97c05e282b90"
+                    }
+                }
+            }
+        ],
+        "pricing": [
+            {
+                "id": "b82c27ed-dfea-44f7-8a1f-f5e9398cf495",
+                "currency": "USD",
+                "buy": {
+                    "HDX": "19.99",
+                    "HD": "18.99",
+                    "SD": "14.99"
+                },
+                "rent": {
+                    "HDX": "5.99",
+                    "HD": "4.99",
+                    "SD": "3.99"
+                }
+            }
+        ]
+    }
 }

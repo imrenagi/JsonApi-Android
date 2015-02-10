@@ -13,4 +13,5 @@ public class MovieInfo {
     private String length;
     private Genre genres[];
     private People actors[];
+    private Pricing pricing;
 }
