@@ -16,6 +16,7 @@ import java.util.Iterator;
 public class JsonApi {
 
     private JSONObject jsonLinksRoot;
+
     private HashMap<String, HashMap<String, JSONObject>> linkedMap;
 
     public Object fromJson(String json, Class targetClass)
@@ -24,7 +25,7 @@ public class JsonApi {
         JSONObject jsonObject = new JSONObject(json);
         jsonLinksRoot = jsonObject.getJSONObject(JsonApiKey.LINKS);
         linkedMap = generateMapLinkedResource(jsonObject.getJSONObject(JsonApiKey.LINKED));
-        return parse(jsonObject,targetClass);
+        return parse(jsonObject, targetClass);
     }
 
     private Object parse(JSONObject jsonObject, Class targetClass)
@@ -41,25 +42,36 @@ public class JsonApi {
                 while (linksIterator.hasNext()) {
                     String linksKey = linksIterator.next();
                     Field fieldForKey = fieldMap.get(linksKey);
-                    if(fieldForKey!=null) {
-                        String linksResourceType =
-                                getResourceType(jsonLinksRoot, linksKey).equals("")
-                                        ? linksKey : getResourceType(jsonLinksRoot, linksKey);
-                        JSONArray arrayOfResourceId = findArrayResourceId(
+                    if (fieldForKey != null) {
+                        Object resourceFromLink=linksJsonObject.get(linksKey);
+                        String linksResourceType ="";
+                        if(resourceFromLink instanceof JSONObject) {
+                            linksResourceType =
+                                    getResourceType((JSONObject) linksJsonObject.get(linksKey),
+                                            linksKey).equals("")
+                                            ? linksKey : getResourceType(
+                                            (JSONObject) linksJsonObject.get(linksKey), linksKey);
+                        }else if(resourceFromLink instanceof JSONArray){
+                            linksResourceType=getResourceTypeFromRootLinks(linksKey);
+                        }
+                            JSONArray arrayOfResourceId = findArrayResourceId(
                                 linksJsonObject.get(linksKey));
-                        if(arrayOfResourceId!=null && fieldForKey.getType().isArray()) {
-                            Object arrayOfResource=Array.newInstance(fieldForKey.getType().getComponentType(),arrayOfResourceId.length());
+                        if (arrayOfResourceId != null && fieldForKey.getType().isArray()) {
+                            Object arrayOfResource = Array
+                                    .newInstance(fieldForKey.getType().getComponentType(),
+                                            arrayOfResourceId.length());
                             for (int i = 0; i < arrayOfResourceId.length(); i++) {
                                 JSONObject jsonResource = linkedMap.get(linksResourceType)
                                         .get(arrayOfResourceId.get(i));
-                                ((Object[])arrayOfResource)[i]=parse(jsonResource,fieldForKey.getType().getComponentType());
+                                ((Object[]) arrayOfResource)[i] = parse(jsonResource,
+                                        fieldForKey.getType().getComponentType());
                             }
-                            setFieldValue(targetObject,fieldForKey,arrayOfResource);
-                        }else{
+                            setFieldValue(targetObject, fieldForKey, arrayOfResource);
+                        } else {
                             JSONObject jsonResource = linkedMap.get(linksResourceType)
                                     .get(linksJsonObject.getString(linksResourceType));
-                            Object resource=parse(jsonResource,fieldForKey.getType());
-                            setFieldValue(targetObject,fieldForKey,resource);
+                            Object resource = parse(jsonResource, fieldForKey.getType());
+                            setFieldValue(targetObject, fieldForKey, resource);
                         }
                     }
                 }
@@ -142,15 +154,28 @@ public class JsonApi {
         return linkedMap;
     }
 
-    private String getResourceType(JSONObject jsonLinksRoot, String term) throws JSONException {
+    private String getResourceTypeFromRootLinks(String term) {
         Iterator<String> iterator = jsonLinksRoot.keys();
         while (iterator.hasNext()) {
             String key = iterator.next();
             if (key.contains(term)) {
-                return ((JSONObject) jsonLinksRoot.get(key)).getString(JsonApiKey.TYPE);
+                try {
+                    return ((JSONObject) jsonLinksRoot.get(key)).getString(JsonApiKey.TYPE);
+                } catch (JSONException e) {
+                    return "";
+                }
             }
         }
         return "";
+    }
+
+    private String getResourceTypeFromResourceObject(JSONObject resourceObject) {
+        try {
+            String type = resourceObject.getString(JsonApiKey.TYPE);
+            return type;
+        } catch (JSONException e) {
+            return "";
+        }
     }
 
     private JSONArray findArrayResourceId(Object object) throws JSONException {
@@ -163,4 +188,11 @@ public class JsonApi {
         }
         return null;
     }
+
+    private String getResourceType(JSONObject resourceObject, String key) {
+        return getResourceTypeFromRootLinks(key).equals("") ? (
+                getResourceTypeFromResourceObject(resourceObject).equals("") ? key
+                        : getResourceTypeFromResourceObject(resourceObject)) : getResourceTypeFromRootLinks(key);
+    }
+
 }
