@@ -3,9 +3,7 @@
         "links": {
             "movie": {
                 "type": "content",
-                "ids": [
-                    "7a3f3033-d63b-39a0-9914-97c05e282b90"
-                ]
+                "id": "7a3f3033-d63b-39a0-9914-97c05e282b90"
             },
             "tv": {
                 "type": "content"

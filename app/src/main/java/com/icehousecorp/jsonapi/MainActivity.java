@@ -1,4 +1,4 @@
-package com.example.zendy.jsonapi;
+package com.icehousecorp.jsonapi;
 
 import org.json.JSONException;
 
@@ -7,11 +7,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.zendy.jsonapi.R;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
-import model.DataResponse;
 import model.WishlistDataResponse;
 
 
@@ -22,7 +23,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         try {
-            Object object=new JsonApi().fromJson(readJson(), WishlistDataResponse.class);
+            Object object=new JSONAPI().generateUsableObject(readJson(), WishlistDataResponse.class);
             System.out.println("");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -63,7 +64,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private String readJson() throws IOException {
-        InputStream stream = getAssets().open("json2.txt");
+        InputStream stream = getAssets().open("json4.txt");
         int size = stream.available();
         byte[] buffer = new byte[size];
         stream.read(buffer);

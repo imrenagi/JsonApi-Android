@@ -1,9 +1,10 @@
-package model;
+package model.json3;
 
 /**
- * Created by zendy on 2/10/15.
+ * Created by imre on 2/11/15.
  */
 public class People {
+
     private String id;
     private String name;
 }

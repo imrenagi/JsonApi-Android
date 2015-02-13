@@ -1,4 +1,4 @@
-package com.example.zendy.jsonapi;
+package com.icehousecorp.jsonapi.Annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
