@@ -11,8 +11,13 @@ import org.json.JSONObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+
+import model.testing.Doctor;
 
 /**
  * Created by zendy on 2/10/15.
@@ -38,7 +43,9 @@ public class JSONAPI {
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
             InstantiationException, JSONException {
         Object targetObject = toTargetClass.getConstructor().newInstance();
+
         HashMap<String, Field> fieldMap = createFieldMap(toTargetClass);
+
         Iterator<String> jsonIterator = aJSONObject.keys();
 
         while (jsonIterator.hasNext()) {
@@ -46,14 +53,18 @@ public class JSONAPI {
 
             if (JSONAPILinks.isLinks(jsonMemberKey)) {
 
-                JSONObject linksJsonObject = ((JSONObject) aJSONObject.get(jsonMemberKey));
+                JSONObject linksJsonObject = ((JSONObject) aJSONObject.get(jsonMemberKey)); //get the json object of a links member
+
+                // iterator for all field in links json
                 Iterator<String> linksIterator = linksJsonObject.keys();
+
                 while (linksIterator.hasNext()) {
 
-                    String linksKey = linksIterator.next();
+                    String linksKey = linksIterator.next(); //get the key inside links
 
                     Field fieldForKey = fieldMap.get(linksKey);
                     if (fieldForKey != null) {
+
                         Object resourceFromLink = linksJsonObject.get(linksKey);
                         String linksResourceType = jsonapiLinks.getType(resourceFromLink, linksKey);
 
@@ -124,12 +135,25 @@ public class JSONAPI {
      */
     private HashMap<String, Field> createFieldMap(Class classType) {
         HashMap<String, Field> map = new HashMap<>();
-        Field fields[] = classType.getDeclaredFields();
-        for (Field field : fields) {
+
+        List<Field> fieldList = new ArrayList<>();
+        getAllFields(fieldList, classType);
+
+        for (Field field : fieldList) {
             String fieldName = field.getAnnotation(SerializeName.class) != null ? field.getAnnotation(SerializeName.class).value() : field.getName();
             map.put(fieldName, field);
         }
         return map;
+    }
+
+    public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+        fields.addAll(Arrays.asList(type.getDeclaredFields()));
+
+        if (type.getSuperclass() != null) {
+            fields = getAllFields(fields, type.getSuperclass());
+        }
+
+        return fields;
     }
 
     private void setFieldValue(Object target, Field field, Object value) throws IllegalAccessException {
