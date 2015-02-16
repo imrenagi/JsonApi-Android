@@ -1,4 +1,4 @@
-package com.icehousecorp.jsonapi.annotation;
+package com.icehousecorp.jsonapi;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,3 +13,4 @@ import java.lang.annotation.Target;
 public @interface SerializeName {
     String value();
 }
+

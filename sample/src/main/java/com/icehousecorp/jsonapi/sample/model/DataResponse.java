@@ -1,7 +1,7 @@
 package com.icehousecorp.jsonapi.sample.model;
 
 
-import com.icehousecorp.jsonapi.annotation.SerializeName;
+import com.icehousecorp.jsonapi.SerializeName;
 
 /**
  * Created by zendy on 2/10/15.

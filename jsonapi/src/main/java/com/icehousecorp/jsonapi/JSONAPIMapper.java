@@ -1,7 +1,5 @@
 package com.icehousecorp.jsonapi;
 
-import com.icehousecorp.jsonapi.annotation.SerializeName;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
