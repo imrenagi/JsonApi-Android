@@ -7,6 +7,6 @@ import com.icehousecorp.jsonapi.Annotation.SerializeName;
  */
 public class WishListData {
     @SerializeName("movie")
-    private Movie movies;
+    private Movie movies[];
     private Tv tv[];
 }

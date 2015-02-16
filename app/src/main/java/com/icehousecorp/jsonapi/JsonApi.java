@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import model.testing.Doctor;
-
 /**
  * Created by zendy on 2/10/15.
  */
@@ -85,6 +83,13 @@ public class JSONAPI {
                             JSONObject jsonResource = jsonapiLinkedResource.getAResourceObject(linksResourceType, (String) resourceId);
                             Object resource = parse(jsonResource, fieldForKey.getType());
                             setFieldValue(targetObject, fieldForKey, resource);
+
+                        } else if (resourceId == null) {
+
+                            if (!fieldForKey.getType().isArray()) {
+                                Object resource = parse(linksJsonObject.getJSONObject(linksKey), fieldForKey.getType());
+                                setFieldValue(targetObject, fieldForKey, resource);
+                            }
                         }
                     }
                 }
@@ -172,6 +177,8 @@ public class JSONAPI {
                     }
                 } else if (((JSONObject) object).has(JSONAPIResourceKey.ID_KEY)) {
                     return ((JSONObject) object).get(JSONAPIResourceKey.ID_KEY);
+                } else {
+                    return null;
                 }
             } catch (JSONException e) {
 

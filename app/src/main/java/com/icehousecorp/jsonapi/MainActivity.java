@@ -65,7 +65,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private String readJson() throws IOException {
-        InputStream stream = getAssets().open("json4.txt");
+        InputStream stream = getAssets().open("json2.txt");
         int size = stream.available();
         byte[] buffer = new byte[size];
         stream.read(buffer);

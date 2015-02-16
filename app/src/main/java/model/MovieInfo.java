@@ -14,4 +14,5 @@ public class MovieInfo {
     private Genre genres[];
     private People actors[];
     private Pricing pricing;
+    private Assets assets;
 }
