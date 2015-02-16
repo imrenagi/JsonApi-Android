@@ -21,7 +21,7 @@ public class JSONAPI {
     private JSONAPILinkedResource jsonapiLinkedResource;
     private JSONAPILinks jsonapiLinks;
 
-    public Object generateUsableObject(String jsonString, Class targetClass)
+    public Object fromJson(String jsonString, Class targetClass)
             throws JSONException, InvocationTargetException, NoSuchMethodException,
             InstantiationException, IllegalAccessException {
 
