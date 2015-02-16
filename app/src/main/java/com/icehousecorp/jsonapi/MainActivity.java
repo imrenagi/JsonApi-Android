@@ -24,7 +24,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         try {
-            Object object = new JSONAPI().generateUsableObject(readJson(), WishlistDataResponse.class);
+            Object object = new JSONAPILinker().generateUsableObject(readJson(), WishlistDataResponse.class);
             System.out.println("");
         } catch (JSONException e) {
             e.printStackTrace();
