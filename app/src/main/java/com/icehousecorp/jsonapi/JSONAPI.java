@@ -1,6 +1,5 @@
 package com.icehousecorp.jsonapi;
 
-import com.icehousecorp.jsonapi.Annotation.SerializeName;
 import com.icehousecorp.jsonapi.constant.JSONAPIMemberKey;
 import com.icehousecorp.jsonapi.constant.JSONAPIResourceKey;
 
@@ -11,16 +10,13 @@ import org.json.JSONObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created by zendy on 2/10/15.
  */
-public class JSONAPILinker {
+public class JSONAPI {
 
     private JSONAPILinkedResource jsonapiLinkedResource;
     private JSONAPILinks jsonapiLinks;
@@ -42,7 +38,7 @@ public class JSONAPILinker {
             InstantiationException, JSONException {
         Object targetObject = toTargetClass.getConstructor().newInstance();
 
-        HashMap<String, Field> fieldMap = createFieldMap(toTargetClass);
+        HashMap<String, Field> fieldMap = JSONAPIMapper.createFieldMap(toTargetClass);
 
         Iterator<String> jsonIterator = aJSONObject.keys();
 
@@ -66,7 +62,7 @@ public class JSONAPILinker {
                         Object resourceFromLink = linksJsonObject.get(linksKey);
                         String linksResourceType = jsonapiLinks.getType(resourceFromLink, linksKey);
 
-                        Object resourceId = findResourceId(linksJsonObject.get(linksKey));
+                        Object resourceId = jsonapiLinks.findResourceId(linksJsonObject.get(linksKey));
 
                         if (resourceId instanceof JSONArray && fieldForKey.getType().isArray()) {
 
@@ -76,19 +72,19 @@ public class JSONAPILinker {
                                 JSONObject jsonResource = jsonapiLinkedResource.getAResourceObject(linksResourceType, (String) arrayOfResourceId.get(i));
                                 ((Object[]) arrayOfResource)[i] = parse(jsonResource, fieldForKey.getType().getComponentType());
                             }
-                            setFieldValue(targetObject, fieldForKey, arrayOfResource);
+                            JSONAPIMapper.setFieldValue(targetObject, fieldForKey, arrayOfResource);
 
                         } else if (resourceId instanceof String) {
 
                             JSONObject jsonResource = jsonapiLinkedResource.getAResourceObject(linksResourceType, (String) resourceId);
                             Object resource = parse(jsonResource, fieldForKey.getType());
-                            setFieldValue(targetObject, fieldForKey, resource);
+                            JSONAPIMapper.setFieldValue(targetObject, fieldForKey, resource);
 
                         } else if (resourceId == null) {
 
                             if (!fieldForKey.getType().isArray()) {
                                 Object resource = parse(linksJsonObject.getJSONObject(linksKey), fieldForKey.getType());
-                                setFieldValue(targetObject, fieldForKey, resource);
+                                JSONAPIMapper.setFieldValue(targetObject, fieldForKey, resource);
                             }
                         }
                     }
@@ -116,16 +112,16 @@ public class JSONAPILinker {
                             }
                         }
 
-                        setFieldValue(targetObject, fieldForKey, arrayObject);
+                        JSONAPIMapper.setFieldValue(targetObject, fieldForKey, arrayObject);
 
                     } else if (jsonObjectKey instanceof JSONObject) {
 
                         Object parsedObject = parse((JSONObject) jsonObjectKey, fieldForKey.getType());
-                        setFieldValue(targetObject, fieldForKey, parsedObject);
+                        JSONAPIMapper.setFieldValue(targetObject, fieldForKey, parsedObject);
 
                     } else {
 
-                        setFieldValue(targetObject, fieldForKey, jsonObjectKey);
+                        JSONAPIMapper.setFieldValue(targetObject, fieldForKey, jsonObjectKey);
 
                     }
                 }
@@ -133,57 +129,6 @@ public class JSONAPILinker {
             }
         }
         return targetObject;
-    }
-
-    /**
-     * @param classType
-     * @return HashMap for fieldName(key) and Field(value)
-     */
-    private HashMap<String, Field> createFieldMap(Class classType) {
-        HashMap<String, Field> map = new HashMap<>();
-
-        List<Field> fieldList = new ArrayList<>();
-        getAllFields(fieldList, classType);
-
-        for (Field field : fieldList) {
-            String fieldName = field.getAnnotation(SerializeName.class) != null ? field.getAnnotation(SerializeName.class).value() : field.getName();
-            map.put(fieldName, field);
-        }
-        return map;
-    }
-
-    public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
-        fields.addAll(Arrays.asList(type.getDeclaredFields()));
-
-        if (type.getSuperclass() != null) {
-            fields = getAllFields(fields, type.getSuperclass());
-        }
-
-        return fields;
-    }
-
-    private void setFieldValue(Object target, Field field, Object value) throws IllegalAccessException {
-        field.setAccessible(true);
-        field.set(target, field.getType().cast(value));
-    }
-
-    private Object findResourceId(Object linkedResource) {
-        if (linkedResource instanceof JSONArray) {
-            return linkedResource;
-        } else if (linkedResource instanceof JSONObject) {
-            try {
-                if (((JSONObject) linkedResource).has(JSONAPIResourceKey.IDS_KEY)) {
-                    if (((JSONObject) linkedResource).get(JSONAPIResourceKey.IDS_KEY) instanceof JSONArray) {
-                        return ((JSONObject) linkedResource).getJSONArray(JSONAPIResourceKey.IDS_KEY);
-                    }
-                } else if (((JSONObject) linkedResource).has(JSONAPIResourceKey.ID_KEY)) {
-                    return ((JSONObject) linkedResource).get(JSONAPIResourceKey.ID_KEY);
-                }
-            } catch (JSONException e) {}
-        } else if (linkedResource instanceof String) {
-            return linkedResource;
-        }
-        return null;
     }
 
 }

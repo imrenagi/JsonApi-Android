@@ -3,6 +3,7 @@ package com.icehousecorp.jsonapi;
 import com.icehousecorp.jsonapi.constant.JSONAPIMemberKey;
 import com.icehousecorp.jsonapi.constant.JSONAPIResourceKey;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -121,5 +122,25 @@ public class JSONAPILinks {
      */
     public static boolean isLinks(String key) {
         return key.equals(JSONAPIMemberKey.LINKS_MEMBER);
+    }
+
+    public Object findResourceId(Object linkedResource) {
+        if (linkedResource instanceof JSONArray) {
+            return linkedResource;
+        } else if (linkedResource instanceof JSONObject) {
+            try {
+                if (((JSONObject) linkedResource).has(JSONAPIResourceKey.IDS_KEY)) {
+                    if (((JSONObject) linkedResource).get(JSONAPIResourceKey.IDS_KEY) instanceof JSONArray) {
+                        return ((JSONObject) linkedResource).getJSONArray(JSONAPIResourceKey.IDS_KEY);
+                    }
+                } else if (((JSONObject) linkedResource).has(JSONAPIResourceKey.ID_KEY)) {
+                    return ((JSONObject) linkedResource).get(JSONAPIResourceKey.ID_KEY);
+                }
+            } catch (JSONException e) {
+            }
+        } else if (linkedResource instanceof String) {
+            return linkedResource;
+        }
+        return null;
     }
 }
