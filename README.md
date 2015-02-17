@@ -15,11 +15,11 @@ Assume the JSON object which will be used in this example is :
 {
   "links": {
     "posts.author": {
-      "href": "",
+      "href": "http://example.com/people/{posts.author}",
       "type": "people"
     },
     "posts.comments": {
-      "href": "",
+      "href": "http://example.com/comments/{posts.comments}",
       "type": "comments"
     }
   },
@@ -76,12 +76,11 @@ Assume the JSON object which will be used in this example is :
 
 ````
 
-Since there are several object from the JSON data, we have to pre-defined the class for the data response. In this case `Post.java`, `People.java`, `Comment.java`. It's almost similar manner when you are trying to convert a json data using GSON Library.
+Since there are several object from the JSON data, we have to define the class for the data response. A response object class should extend `JSONAPIResourceObject.java`. This class is containing default members of a resource object such as id, type, and href. In this case `Post.java`, `People.java`, `Comment.java` are the resource objects which extend `JSONAPIResourceObject.
 
 **Post.java**
 ````java
-public class Post {
-    private String id;
+public class Post extends JSONAPIResourceObject{
     private String title;
     private People author;
     private Comment[] comments;
@@ -90,16 +89,14 @@ public class Post {
 
 **People.java**
 ````java
-public class People {
-    private String id;
+public class People extends JSONAPIResourceObject {
     private String name;
 }
 ````
 
 **Comment.java**
 ````java
-public class Comment {
-    private String id;
+public class Comment extends JSONAPIResourceObject {
     private String body;
 }
 ````
