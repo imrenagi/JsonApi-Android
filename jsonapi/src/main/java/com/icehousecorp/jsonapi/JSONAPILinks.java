@@ -82,6 +82,24 @@ public class JSONAPILinks {
     }
 
     /**
+     * *
+     *
+     * @param term
+     * @return the json field containing term
+     */
+    public String getLinksKeyContainingTerm(String term) {
+
+        Iterator<String> iterator = links.keys();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            if (key.contains(term)) {
+                return key;
+            }
+        }
+        return EMPTY_STRING;
+    }
+
+    /**
      * @param resourceObject
      * @return type of a resource object in String if the type is specified in the resource object
      */
@@ -101,19 +119,24 @@ public class JSONAPILinks {
      * @param term
      * @return URI Template in String
      */
-    private String getURLTemplateFromLinksMember(String term) {
+    public String getURLTemplateFromLinksMember(String term) {
         Iterator<String> iterator = links.keys();
         while (iterator.hasNext()) {
             String key = iterator.next();
             if (key.contains(term)) {
                 try {
-                    return ((JSONObject) links.get(key)).getString(JSONAPIResourceKey.HREF_KEY);
+                    Object linksObject = links.get(key);
+                    if (linksObject instanceof JSONObject && ((JSONObject) linksObject).has(JSONAPIResourceKey.HREF_KEY)) {
+                        return ((JSONObject) linksObject).getString(JSONAPIResourceKey.HREF_KEY);
+                    } else if (linksObject instanceof String) {
+                        return (String) linksObject;
+                    }
                 } catch (JSONException e) {
-                    return EMPTY_STRING;
+                    return null;
                 }
             }
         }
-        return EMPTY_STRING;
+        return null;
     }
 
     /**

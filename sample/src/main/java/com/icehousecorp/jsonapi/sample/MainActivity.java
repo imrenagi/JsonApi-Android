@@ -6,7 +6,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.icehousecorp.jsonapi.JSONAPI;
+import com.icehousecorp.jsonapi.sample.model.DataResponse;
 import com.icehousecorp.jsonapi.sample.model.WishlistDataResponse;
+import com.icehousecorp.jsonapi.sample.model.json3.Post;
+import com.icehousecorp.jsonapi.sample.model.json3.Posts;
 
 import org.json.JSONException;
 
@@ -23,7 +26,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         try {
-            Object object = new JSONAPI().fromJson(readJson(), WishlistDataResponse.class);
+            Object object = new JSONAPI().fromJson(readJson(), DataResponse.class);
             System.out.println("");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -63,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private String readJson() throws IOException {
-        InputStream stream = getAssets().open("json2.txt");
+        InputStream stream = getAssets().open("json.txt");
         int size = stream.available();
         byte[] buffer = new byte[size];
         stream.read(buffer);
