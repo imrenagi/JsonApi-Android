@@ -19,6 +19,14 @@ public class JSONAPILinks {
     private JSONObject links;
 
     /**
+     * @param key
+     * @return true if key is "links"
+     */
+    public static boolean isLinks(String key) {
+        return key.equals(JSONAPIMemberKey.LINKS_MEMBER);
+    }
+
+    /**
      * Default Constructor
      *
      * @param jsonObject raw JSON API Object
@@ -28,10 +36,15 @@ public class JSONAPILinks {
         links = jsonObject.getJSONObject(JSONAPIMemberKey.LINKS_MEMBER);
     }
 
-    public String getType(Object object, String linksKey) {
+    /**
+     * @param resourceObject
+     * @param linksKey
+     * @return the type of a resource object.
+     */
+    public String getType(Object resourceObject, String linksKey) {
         String type;
-        if (object instanceof JSONObject) {
-            type = getResourceTypeForJSONObject((JSONObject) object, linksKey);
+        if (resourceObject instanceof JSONObject) {
+            type = getResourceTypeForJSONObject((JSONObject) resourceObject, linksKey);
         } else {
             type = getResourceTypeFromLinksMember(linksKey);
         }
@@ -44,17 +57,14 @@ public class JSONAPILinks {
     }
 
     /**
-     * If a JSON API formatted Object give information about "links",
-     * this function will return URI Template in String format inside term field.
-     *
-     * @param term
-     * @return type of a resource object in String
+     * @param keyword
+     * @return linked type of a resource object
      */
-    private String getResourceTypeFromLinksMember(String term) {
+    private String getResourceTypeFromLinksMember(String keyword) {
         Iterator<String> iterator = links.keys();
         while (iterator.hasNext()) {
             String key = iterator.next();
-            if (key.contains(term)) {
+            if (key.contains(keyword)) {
                 try {
                     return ((JSONObject) links.get(key)).getString(JSONAPIResourceKey.TYPE_KEY);
                 } catch (JSONException e) {
@@ -71,32 +81,10 @@ public class JSONAPILinks {
         String typeFromResourceObject = getResourceTypeFromResourceObject(resourceObject);
 
         if (typeFromLinksMember.equals(EMPTY_STRING)) {
-            if (typeFromResourceObject.equals(EMPTY_STRING)) {
-                return key;
-            } else {
-                return typeFromResourceObject;
-            }
+            return typeFromResourceObject.equals(EMPTY_STRING) ? key : typeFromResourceObject;
         } else {
             return typeFromLinksMember;
         }
-    }
-
-    /**
-     * *
-     *
-     * @param term
-     * @return the json field containing term
-     */
-    public String getLinksKeyContainingTerm(String term) {
-
-        Iterator<String> iterator = links.keys();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            if (key.contains(term)) {
-                return key;
-            }
-        }
-        return EMPTY_STRING;
     }
 
     /**
@@ -105,16 +93,57 @@ public class JSONAPILinks {
      */
     private String getResourceTypeFromResourceObject(JSONObject resourceObject) {
         try {
-            String type = resourceObject.getString(JSONAPIResourceKey.TYPE_KEY);
-            return type;
+            return resourceObject.getString(JSONAPIResourceKey.TYPE_KEY);
         } catch (JSONException e) {
             return EMPTY_STRING;
         }
     }
 
     /**
+     * @param resourceObject resource resourceObject class
+     * @param linksKey
+     * @return
+     */
+    public String getURLTemplate(Object resourceObject, String linksKey) {
+        String type;
+        if (resourceObject instanceof JSONObject) {
+            type = getURLTemplateForJSONObject((JSONObject) resourceObject, linksKey);
+        } else {
+            type = getURLTemplateFromLinksMember(linksKey);
+        }
+
+        return type;
+    }
+
+    private String getURLTemplateForJSONObject(JSONObject resourceObject, String key) {
+
+        String hrefFromLinksMember = getURLTemplateFromLinksMember(key);
+        String hrefFromResourceObject = getURLTemplateFromResourceObject(resourceObject);
+
+        if (hrefFromLinksMember == null) {
+            return hrefFromResourceObject;
+        } else {
+            return hrefFromLinksMember;
+        }
+    }
+
+    /**
+     * Get URL Template/href link for a resource object specified in href field within itself.
+     *
+     * @param resourceObject
+     * @return URL Template / href links
+     */
+    private String getURLTemplateFromResourceObject(JSONObject resourceObject) {
+        try {
+            return resourceObject.getString(JSONAPIResourceKey.HREF_KEY);
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+    /**
      * If a JSON API formatted Object give information about "links",
-     * this function will return URI Template in String format inside term field.
+     * this function will return URL Template in String format inside term field.
      *
      * @param term
      * @return URI Template in String
@@ -139,14 +168,6 @@ public class JSONAPILinks {
         return null;
     }
 
-    /**
-     * @param key
-     * @return true if key is "links"
-     */
-    public static boolean isLinks(String key) {
-        return key.equals(JSONAPIMemberKey.LINKS_MEMBER);
-    }
-
     public Object findResourceId(Object linkedResource) {
         if (linkedResource instanceof JSONArray) {
             return linkedResource;
@@ -165,5 +186,21 @@ public class JSONAPILinks {
             return linkedResource;
         }
         return null;
+    }
+
+    /**
+     * @param term
+     * @return the json field containing term
+     */
+    public String getLinksKeyContainingTerm(String term) {
+
+        Iterator<String> iterator = links.keys();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            if (key.contains(term)) {
+                return key;
+            }
+        }
+        return EMPTY_STRING;
     }
 }

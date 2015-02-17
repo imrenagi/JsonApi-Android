@@ -11,7 +11,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Created by zendy on 2/10/15.
@@ -64,7 +63,7 @@ public class JSONAPI {
                         Object resourceFromLink = linksJsonObject.get(linksKey);
                         String linksResourceType = jsonapiLinks.getType(resourceFromLink, linksKey);
                         String linksResourceFieldKey = jsonapiLinks.getLinksKeyContainingTerm(linksKey);
-                        String urlTemplate = jsonapiLinks.getURLTemplateFromLinksMember(linksKey);
+                        String urlTemplate = jsonapiLinks.getURLTemplate(resourceFromLink, linksKey);
 
                         Object resourceId = jsonapiLinks.findResourceId(linksJsonObject.get(linksKey));
 
