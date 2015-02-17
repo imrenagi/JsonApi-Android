@@ -1,7 +1,6 @@
 package com.icehousecorp.jsonapi;
 
 import com.icehousecorp.jsonapi.constant.JSONAPIMemberKey;
-import com.icehousecorp.jsonapi.constant.JSONAPIResourceKey;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,6 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Created by zendy on 2/10/15.
@@ -36,6 +36,7 @@ public class JSONAPI {
     private Object parse(JSONObject aJSONObject, Class toTargetClass)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
             InstantiationException, JSONException {
+
         Object targetObject = toTargetClass.getConstructor().newInstance();
 
         HashMap<String, Field> fieldMap = JSONAPIMapper.createFieldMap(toTargetClass);
@@ -57,10 +58,13 @@ public class JSONAPI {
                     String linksKey = linksIterator.next(); //get the key inside links
 
                     Field fieldForKey = fieldMap.get(linksKey);
+
                     if (fieldForKey != null) {
 
                         Object resourceFromLink = linksJsonObject.get(linksKey);
                         String linksResourceType = jsonapiLinks.getType(resourceFromLink, linksKey);
+                        String linksResourceFieldKey = jsonapiLinks.getLinksKeyContainingTerm(linksKey);
+                        String urlTemplate = jsonapiLinks.getURLTemplateFromLinksMember(linksKey);
 
                         Object resourceId = jsonapiLinks.findResourceId(linksJsonObject.get(linksKey));
 
@@ -71,6 +75,12 @@ public class JSONAPI {
                             for (int i = 0; i < arrayOfResourceId.length(); i++) {
                                 JSONObject jsonResource = jsonapiLinkedResource.getAResourceObject(linksResourceType, (String) arrayOfResourceId.get(i));
                                 ((Object[]) arrayOfResource)[i] = parse(jsonResource, fieldForKey.getType().getComponentType());
+
+                                if (((Object[]) arrayOfResource)[i] instanceof JSONAPIResourceObject) {
+                                    JSONAPIResourceObject jsonapiResourceObject = (JSONAPIResourceObject) ((Object[]) arrayOfResource)[i];
+                                    jsonapiResourceObject.setType(linksResourceType);
+                                    jsonapiResourceObject.setHref(urlTemplate, linksResourceFieldKey);
+                                }
                             }
                             JSONAPIMapper.setFieldValue(targetObject, fieldForKey, arrayOfResource);
 
@@ -78,6 +88,13 @@ public class JSONAPI {
 
                             JSONObject jsonResource = jsonapiLinkedResource.getAResourceObject(linksResourceType, (String) resourceId);
                             Object resource = parse(jsonResource, fieldForKey.getType());
+
+                            if (resource instanceof JSONAPIResourceObject) {
+                                JSONAPIResourceObject jsonapiResourceObject = (JSONAPIResourceObject) resource;
+                                jsonapiResourceObject.setType(linksResourceType);
+                                jsonapiResourceObject.setHref(urlTemplate, linksResourceFieldKey);
+                            }
+
                             JSONAPIMapper.setFieldValue(targetObject, fieldForKey, resource);
 
                         } else if (resourceId == null) {
@@ -96,8 +113,8 @@ public class JSONAPI {
 
                 if (fieldForKey != null) {
                     Object jsonObjectKey = aJSONObject.get(jsonMemberKey);
-                    if (jsonObjectKey instanceof JSONArray && fieldForKey.getType().isArray()) {
 
+                    if (jsonObjectKey instanceof JSONArray && fieldForKey.getType().isArray()) {
                         JSONArray jsonArray = (JSONArray) jsonObjectKey;
                         Object arrayObject = Array.newInstance(fieldForKey.getType().getComponentType(), jsonArray.length());
 
@@ -105,6 +122,7 @@ public class JSONAPI {
 
                             Object objectFromArray = jsonArray.get(i);
                             if (objectFromArray instanceof JSONObject) {
+
                                 Object parsedObject = parse(((JSONObject) objectFromArray), fieldForKey.getType().getComponentType());
                                 ((Object[]) arrayObject)[i] = parsedObject;
                             } else {
@@ -113,21 +131,16 @@ public class JSONAPI {
                         }
 
                         JSONAPIMapper.setFieldValue(targetObject, fieldForKey, arrayObject);
-
                     } else if (jsonObjectKey instanceof JSONObject) {
-
                         Object parsedObject = parse((JSONObject) jsonObjectKey, fieldForKey.getType());
                         JSONAPIMapper.setFieldValue(targetObject, fieldForKey, parsedObject);
-
                     } else {
-
                         JSONAPIMapper.setFieldValue(targetObject, fieldForKey, jsonObjectKey);
-
                     }
                 }
-
             }
         }
+
         return targetObject;
     }
 
