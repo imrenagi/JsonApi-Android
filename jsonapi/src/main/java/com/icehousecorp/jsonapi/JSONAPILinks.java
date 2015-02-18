@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import java.util.Iterator;
 
 /**
@@ -33,7 +35,14 @@ public class JSONAPILinks {
      * @throws JSONException
      */
     public JSONAPILinks(JSONObject jsonObject) throws JSONException {
-        links = jsonObject.getJSONObject(JSONAPIMemberKey.LINKS_MEMBER);
+        try {
+            links = jsonObject.getJSONObject(JSONAPIMemberKey.LINKS_MEMBER);
+        } catch (JSONException e) {
+            JSONException exception = new JSONException(
+                    "Can not find links key or Links should be type of JSONObject");
+            exception.setStackTrace(e.getStackTrace());
+            throw exception;
+        }
     }
 
     /**
@@ -155,7 +164,8 @@ public class JSONAPILinks {
             if (key.contains(term)) {
                 try {
                     Object linksObject = links.get(key);
-                    if (linksObject instanceof JSONObject && ((JSONObject) linksObject).has(JSONAPIResourceKey.HREF_KEY)) {
+                    if (linksObject instanceof JSONObject && ((JSONObject) linksObject).has(
+                            JSONAPIResourceKey.HREF_KEY)) {
                         return ((JSONObject) linksObject).getString(JSONAPIResourceKey.HREF_KEY);
                     } else if (linksObject instanceof String) {
                         return (String) linksObject;
@@ -179,8 +189,11 @@ public class JSONAPILinks {
                     }
                 } else if (((JSONObject) linkedResource).has(JSONAPIResourceKey.ID_KEY)) {
                     return ((JSONObject) linkedResource).get(JSONAPIResourceKey.ID_KEY);
+                }else{
+                    throw new JSONException("Can not find resource id. This object will be handled not as linked resource");
                 }
             } catch (JSONException e) {
+                Log.e("JSONAPI",e.getMessage());
             }
         } else if (linkedResource instanceof String) {
             return linkedResource;
